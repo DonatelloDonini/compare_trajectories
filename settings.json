@@ -22,8 +22,8 @@
         "show_grid": true,
         "grid_color": "#FFFFFF"
     },
-    "steering_timeline_plot": {
-        "title": "Steering Timeline",
+    "heading_timeline_plot": {
+        "title": "Heading Timeline",
         "title_location": "left",
         "show_axes": true,
         "axes_color": "#FFFFFF",

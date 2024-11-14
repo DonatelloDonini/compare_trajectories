@@ -24,6 +24,28 @@ COLORED_WARNING= "\033[33m[ WARNING ]\033[0m"
 
 CM2INCH= 0.393701
 
+def read_trajectory(file_path: str, verbose: bool= False)-> pd.DataFrame:
+    try:
+        dataframe= pd.read_csv(file_path)
+    except pd.errors.EmptyDataError:
+        raise errors.EmptyFileError(file_path, "File {filename} is empty.\nTo solve this issue, try passing a log file that has an x and a y parameter in its columns.")
+
+    if dataframe.empty and verbose: print(f"{COLORED_WARNING} The file {file_path} does not contain any values.")
+
+    return dataframe
+
+def get_heading_history(file_path: str, verbose: bool= False)-> list:
+    dataframe= read_trajectory(file_path, verbose)
+
+    ###                                        ###
+    ### Checking wether required columns exist ###
+    ###                                        ###
+
+    if "heading" not in dataframe.columns:
+        raise errors.UnexistentRequiredColumn("heading", filename= file_path)
+
+    return list(dataframe.heading)
+
 def draw_trajectory(points: list, label: str, color: str, thickness: int= 1, alpha: float= 0.75, show_legend: bool= True, legend_background_color: str= "#FFFFFF", legend_text_color: str= "#000000")-> None:
     x, y= zip(*points)
     plt.plot(x, y, label= label, color= color, linewidth= thickness, alpha= alpha)
@@ -32,12 +54,7 @@ def draw_trajectory(points: list, label: str, color: str, thickness: int= 1, alp
 
 
 def get_trajectory_points(file_path: str, verbose: bool= False)-> list:
-    try:
-        dataframe= pd.read_csv(file_path)
-    except pd.errors.EmptyDataError:
-        raise errors.EmptyFileError(file_path, "File {filename} is empty.\nTo solve this issue, try passing a log file that has an x and a y parameter in its columns.")
-
-    if dataframe.empty and verbose: print(f"{COLORED_WARNING} The file {file_path} does not contain any values.")
+    dataframe= read_trajectory(file_path, verbose)
 
     ###                                        ###
     ### Checking wether required columns exist ###
@@ -187,43 +204,51 @@ def main(settings: Settings) -> None:
         background_color
     )
 
-    ###                                         ###
-    ### Initializing the steering-timeline plot ###
-    ###                                         ###
+    ###                                        ###
+    ### Initializing the heading-timeline plot ###
+    ###                                        ###
 
-    steering_timeline_plot= plt.subplot(122)
-    steering_timeline_plot.set_title(
-        settings.get("steering_timeline_plot.title", "Steering Timeline"),
-        loc= settings.get("steering_timeline_plot.title_location", "left"),
+    heading_timeline_plot= plt.subplot(122)
+    heading_timeline_plot.set_title(
+        settings.get("heading_timeline_plot.title", "Heading Timeline"),
+        loc= settings.get("heading_timeline_plot.title_location", "left"),
         color= text_color
     )
-    steering_timeline_plot.set_facecolor(background_color)
+    heading_timeline_plot.set_facecolor(background_color)
 
-    if settings.get("steering_timeline_plot.show_axes", True):
+    if settings.get("heading_timeline_plot.show_axes", True):
         # Set color to axes
-        steering_timeline_plot.spines["top"].set_color("none")
-        steering_timeline_plot.spines["right"].set_color("none")
-        steering_timeline_plot.spines["bottom"].set_color(settings.get("steering_timeline_plot.axes_color", "#000000"))
-        steering_timeline_plot.spines["left"].set_color(settings.get("steering_timeline_plot.axes_color", "#000000"))
+        heading_timeline_plot.spines["top"].set_color("none")
+        heading_timeline_plot.spines["right"].set_color("none")
+        heading_timeline_plot.spines["bottom"].set_color(settings.get("heading_timeline_plot.axes_color", "#000000"))
+        heading_timeline_plot.spines["left"].set_color(settings.get("heading_timeline_plot.axes_color", "#000000"))
 
 
-        steering_timeline_plot.spines["bottom"].set_position("zero") # Fix x-axis to 0 of y-axis
-        steering_timeline_plot.tick_params(axis="both", colors=text_color) # Show ticks
-        steering_timeline_plot.plot(1, 0, ">", color=settings.get("steering_timeline_plot.axes_color", "#000000"), transform=steering_timeline_plot.get_yaxis_transform(), clip_on=False)
+        heading_timeline_plot.spines["bottom"].set_position("zero") # Fix x-axis to 0 of y-axis
+        heading_timeline_plot.tick_params(axis="both", colors=text_color) # Show ticks
+        heading_timeline_plot.plot(1, 0, ">", color=settings.get("heading_timeline_plot.axes_color", "#000000"), transform=heading_timeline_plot.get_yaxis_transform(), clip_on=False)
 
     else:
-        for spine in steering_timeline_plot.spines.values():
+        for spine in heading_timeline_plot.spines.values():
             spine.set_visible(False)
 
-        steering_timeline_plot.xaxis.set_ticks_position("none")
-        steering_timeline_plot.yaxis.set_ticks_position("none")
+        heading_timeline_plot.xaxis.set_ticks_position("none")
+        heading_timeline_plot.yaxis.set_ticks_position("none")
 
-    steering_timeline_plot.set_ylim(ymin=180, ymax= -180)
+    heading_timeline_plot.set_ylim(ymin=180, ymax= -180)
 
     ###                     ###
     ### Setting plot bounds ###
     ###                     ###
 
+    expected_heading_history= get_heading_history(expected_trajectory_file, VERBOSE)
+    real_heading_history= get_heading_history(real_trajectory_file, VERBOSE)
+
+    if VERBOSE: print(f"{COLORED_OK} Succesfully extracted heading history.")
+
+    max_sampled_points= max(len(expected_heading_history), len(real_heading_history))
+
+    heading_timeline_plot.set_xlim(xmin=0, xmax= max_sampled_points)
 
     ###                 ###
     ### Saving the plot ###
