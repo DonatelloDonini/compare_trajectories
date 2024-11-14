@@ -4,9 +4,9 @@ This script compares two trajectories by plotting them on a graph using matplotl
 It reads trajectory data from CSV files, processes the data, and generates a plot
 that visually compares the expected and real trajectories.
 
-Usage:
-    Run this script as the main module to generate a plot comparing the expected and real trajectories.
-    Play with the settings in the settings.json file.
+# Usage
+Run this script as the main module to generate a plot comparing the expected and real trajectories.
+Play with the settings in the settings.json file.
 """
 
 import matplotlib # type: ignore
