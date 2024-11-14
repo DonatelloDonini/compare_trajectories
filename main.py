@@ -9,8 +9,8 @@ Usage:
     Play with the settings in the settings.json file.
 """
 
-import matplotlib
-import matplotlib.pyplot as plt
+import matplotlib # type: ignore
+import matplotlib.pyplot as plt # type: ignore
 import os
 import pandas as pd # type: ignore
 
