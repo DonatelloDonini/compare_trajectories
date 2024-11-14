@@ -109,8 +109,11 @@ def main(settings: Settings) -> None:
     trajectories_comparison_output_path= os.path.join(OUTPUT_DIRECTORY, settings.get("trajectories_comparisons_plot.filename", "trajectories_comparison.png"))
     plt.savefig(trajectories_comparison_output_path)
 
-    if VERBOSE:
-        print(f"{COLORED_OK} Succesfully saved plot to {trajectories_comparison_output_path}")
+    ###                  ###
+    ### Showing the plot ###
+    ###                  ###
+
+    plt.show()
 
 
 if __name__ == "__main__":
