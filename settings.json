@@ -1,7 +1,7 @@
 {
     "files": {
-        "expected_trajectory_log_file": "data.csv",
-        "real_trajectory_log_file": "data.csv",
+        "expected_trajectory_log_file": "path_1.csv",
+        "real_trajectory_log_file": "path_2.csv",
         "output_directory": "output"
     },
     "trajectories_comparisons_plot": {
@@ -18,11 +18,13 @@
         "show_grid": true
     },
     "real_trajectory": {
+        "label": "Real Trajectory",
         "color": "#00FF00",
         "line_width": 2,
         "alpha": 0.75
     },
     "expected_trajectory": {
+        "label": "Expected Trajectory",
         "color": "#FF0000",
         "line_width": 2,
         "alpha": 0.75

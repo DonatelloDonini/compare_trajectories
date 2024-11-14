@@ -24,11 +24,10 @@ COLORED_WARNING= "\033[33m[ WARNING ]\033[0m"
 
 CM2INCH= 0.393701
 
-def draw_trajectory(ax, points: list, label: str, color: str, thickness: int= 1, alpha= 0.75, show_legend: bool= True, legend_background_color: str= "#FFFFFF", legend_text_color: str= "#000000")-> None:
+def draw_trajectory(points: list, label: str, color: str, thickness: int= 1, alpha: float= 0.75, show_legend: bool= True, legend_background_color: str= "#FFFFFF", legend_text_color: str= "#000000")-> None:
     x, y= zip(*points)
-    ax.plot(x, y, color= color, linewidth= thickness, alpha= alpha)
+    plt.plot(x, y, label= label, color= color, linewidth= thickness, alpha= alpha)
     if show_legend:
-        plt.plot(x, y, label= label, color= color)
         plt.legend(facecolor= legend_background_color, labelcolor= legend_text_color, framealpha= 1, loc="lower right")
 
 
@@ -161,22 +160,20 @@ def main(settings: Settings) -> None:
     ###                          ###
 
     draw_trajectory(
-        ax,
         expected_trajectory_points,
         settings.get("expected_trajectory.label", "Expected Trajectory"),
         settings.get("expected_trajectory.color", "#FF0000"),
-        settings.get("expected_trajectory.thickness", 2),
-        settings.get("expected_trajectory.alpha", .75),
+        settings.get("expected_trajectory.line_width", 2),
+        settings.get("expected_trajectory.alpha", 0.75),
         settings.get("trajectories_comparisons_plot.show_legend", True),
         text_color,
         background_color
     )
     draw_trajectory(
-        ax,
         real_trajectory_points,
         settings.get("real_trajectory.label", "Real Trajectory"),
         settings.get("real_trajectory.color", "#00FF00"),
-        settings.get("real_trajectory.thickness", 2),
+        settings.get("real_trajectory.line_width", 2),
         settings.get("real_trajectory.alpha", .75),
         settings.get("trajectories_comparisons_plot.show_legend", True),
         text_color,
