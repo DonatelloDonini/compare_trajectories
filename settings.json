@@ -1,24 +1,34 @@
 {
     "general": {
-        "verbose": true
+        "verbose": true,
+        "height_cm": 16,
+        "width_cm": 32
     },
     "files": {
         "expected_trajectory_log_file": "path_1.csv",
         "real_trajectory_log_file": "path_2.csv",
-        "output_directory": "output"
+        "output_directory": "output",
+        "filename": "trajectories_comparison.png"
+    },
+    "general_styling": {
+        "background_color": "#000000",
+        "text_color": "#FFFFFF"
     },
     "trajectories_comparisons_plot": {
-        "height_cm": 16,
-        "width_cm": 16,
-        "filename": "trajectories_comparison.png",
-        "background_color": "#000000",
         "title": "Trajectories Comparison",
         "title_location": "left",
-        "text_color": "#FFFFFF",
-        "axis_color": "#000000",
         "show_axes": false,
-        "grid_color": "#FFFFFF",
-        "show_grid": true
+        "axes_color": "#FFFFFF",
+        "show_grid": true,
+        "grid_color": "#FFFFFF"
+    },
+    "steering_timeline_plot": {
+        "title": "Steering Timeline",
+        "title_location": "left",
+        "show_axes": true,
+        "axes_color": "#FFFFFF",
+        "show_grid": true,
+        "grid_color": "#FFFFFF"
     },
     "real_trajectory": {
         "label": "Real Trajectory",
@@ -31,8 +41,5 @@
         "color": "#FF0000",
         "line_width": 2,
         "alpha": 0.75
-    },
-    "headings_comparison_plot": {
-
     }
 }
