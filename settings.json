@@ -1,7 +1,7 @@
 {
     "files": {
         "expected_trajectory_log_file": "expected.log",
-        "real_trajectory_log_file": "real.log",
+        "real_trajectory_log_file": "data.log",
         "output_directory": "output"
     },
     "trajectories_comparisons_plot": {
@@ -18,24 +18,12 @@
         "show_grid": true
     },
     "real_trajectory": {
-        "color": "#FF0000",
-        "line_width": 2,
-        "line_style": "solid",
-        "marker": "circle",
-        "marker_size": 5,
-        "marker_color": "#FF0000",
-        "marker_line_width": 1,
-        "marker_line_color": "#FF0000"
+        "color": "#00FF00",
+        "line_width": 2
     },
     "expected_trajectory": {
-        "color": "#0000FF",
-        "line_width": 2,
-        "line_style": "solid",
-        "marker": "circle",
-        "marker_size": 5,
-        "marker_color": "#0000FF",
-        "marker_line_width": 1,
-        "marker_line_color": "#0000FF"
+        "color": "#FF0000",
+        "line_width": 2
     },
     "general": {
         "verbose": true

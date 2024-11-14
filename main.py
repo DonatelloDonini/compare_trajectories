@@ -1,15 +1,12 @@
 """
 # Abstract
-This program takes in the paths of 2 log files, each representing the trajectory of the veichle.
-Running the file will generate a series of comparison statistics between the trajectories.
+This script compares two trajectories by plotting them on a graph using matplotlib.
+It reads trajectory data from CSV files, processes the data, and generates a plot
+that visually compares the expected and real trajectories.
 
-Each log file is a csv file with the following columns:
-x,y,heading,s,dst,angle,delta
-
-# Example
-```
-python main.py <path/to/ideal_trajectory.csv> <path/to/real_trajectory.csv>
-```
+Usage:
+    Run this script as the main module to generate a plot comparing the expected and real trajectories.
+    Play with the settings in the settings.json file.
 """
 
 import matplotlib
@@ -27,9 +24,9 @@ COLORED_WARNING= "\033[33m[ WARNING ]\033[0m"
 
 CM2INCH= 0.393701
 
-def draw_trajectory(ax, points: list):
+def draw_trajectory(ax, points: list, color: str, thickness: int= 1)-> None:
     x, y= zip(*points)
-    ax.plot(x, y)
+    ax.plot(x, y, color= color, linewidth= thickness, alpha= 0.75)
 
 def get_trajectory_points(file_path: str, verbose: bool= False)-> list:
     try:
@@ -159,8 +156,18 @@ def main(settings: Settings) -> None:
     ### Drawing the trajectories ###
     ###                          ###
 
-    draw_trajectory(ax, expected_trajectory_points)
-    # draw_trajectory(ax, real_trajectory_points)
+    draw_trajectory(
+        ax,
+        expected_trajectory_points,
+        settings.get("expected_trajectory.color", "#FF0000"),
+        settings.get("expected_trajectory.thickness", 2)
+    )
+    draw_trajectory(
+        ax,
+        real_trajectory_points,
+        settings.get("real_trajectory.color", "#00FF00"),
+        settings.get("real_trajectory.thickness", 2)
+    )
 
     ###                 ###
     ### Saving the plot ###
