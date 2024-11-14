@@ -1,7 +1,7 @@
 {
     "files": {
-        "expected_trajectory_log_file": "expected.log",
-        "real_trajectory_log_file": "data.log",
+        "expected_trajectory_log_file": "data.csv",
+        "real_trajectory_log_file": "data.csv",
         "output_directory": "output"
     },
     "trajectories_comparisons_plot": {
