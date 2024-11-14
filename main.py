@@ -24,11 +24,12 @@ COLORED_WARNING= "\033[33m[ WARNING ]\033[0m"
 
 CM2INCH= 0.393701
 
-def draw_trajectory(ax, points: list, label: str, color: str, thickness: int= 1, alpha= 0.75, legend_background_color: str= "#FFFFFF", legend_text_color: str= "#000000")-> None:
+def draw_trajectory(ax, points: list, label: str, color: str, thickness: int= 1, alpha= 0.75, show_legend: bool= True, legend_background_color: str= "#FFFFFF", legend_text_color: str= "#000000")-> None:
     x, y= zip(*points)
     ax.plot(x, y, color= color, linewidth= thickness, alpha= alpha)
-    plt.plot(x, y, label= label, color= color)
-    plt.legend(facecolor= legend_background_color, labelcolor= legend_text_color, framealpha= 1, loc="lower right")
+    if show_legend:
+        plt.plot(x, y, label= label, color= color)
+        plt.legend(facecolor= legend_background_color, labelcolor= legend_text_color, framealpha= 1, loc="lower right")
 
 
 def get_trajectory_points(file_path: str, verbose: bool= False)-> list:
@@ -155,9 +156,6 @@ def main(settings: Settings) -> None:
     ax.set_xlim(coordinate_bounds["left"], coordinate_bounds["right"])
     ax.set_ylim(coordinate_bounds["bottom"], coordinate_bounds["top"])
 
-    # if settings.get("trajectories_comparisons_plot.show_legend", True):
-    #     plt.legend()
-
     ###                          ###
     ### Drawing the trajectories ###
     ###                          ###
@@ -169,6 +167,7 @@ def main(settings: Settings) -> None:
         settings.get("expected_trajectory.color", "#FF0000"),
         settings.get("expected_trajectory.thickness", 2),
         settings.get("expected_trajectory.alpha", .75),
+        settings.get("trajectories_comparisons_plot.show_legend", True),
         text_color,
         background_color
     )
@@ -179,6 +178,7 @@ def main(settings: Settings) -> None:
         settings.get("real_trajectory.color", "#00FF00"),
         settings.get("real_trajectory.thickness", 2),
         settings.get("real_trajectory.alpha", .75),
+        settings.get("trajectories_comparisons_plot.show_legend", True),
         text_color,
         background_color
     )
