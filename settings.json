@@ -1,12 +1,15 @@
 {
+    "general": {
+        "verbose": true
+    },
     "files": {
         "expected_trajectory_log_file": "path_1.csv",
         "real_trajectory_log_file": "path_2.csv",
         "output_directory": "output"
     },
     "trajectories_comparisons_plot": {
-        "height_cm": "16",
-        "width_cm": "16",
+        "height_cm": 16,
+        "width_cm": 16,
         "filename": "trajectories_comparison.png",
         "background_color": "#000000",
         "title": "Trajectories Comparison",
@@ -29,7 +32,7 @@
         "line_width": 2,
         "alpha": 0.75
     },
-    "general": {
-        "verbose": true
+    "headings_comparison_plot": {
+
     }
 }
