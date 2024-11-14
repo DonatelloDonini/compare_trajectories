@@ -134,7 +134,7 @@ def main(settings: Settings) -> None:
         )
 
     plt.tick_params(
-        axis='both',
+        axis="both",
         labelcolor=text_color
     )
 
@@ -200,16 +200,16 @@ def main(settings: Settings) -> None:
     steering_timeline_plot.set_facecolor(background_color)
 
     if settings.get("steering_timeline_plot.show_axes", True):
-        steering_timeline_plot.spines["bottom"].set_color(
-            settings.get("steering_timeline_plot.axes_color", "#FFFFFF")
-        )
-        steering_timeline_plot.spines['bottom'].set_position('zero')
+        # Set color to axes
+        steering_timeline_plot.spines["top"].set_color("none")
+        steering_timeline_plot.spines["right"].set_color("none")
+        steering_timeline_plot.spines["bottom"].set_color(settings.get("steering_timeline_plot.axes_color", "#000000"))
+        steering_timeline_plot.spines["left"].set_color(settings.get("steering_timeline_plot.axes_color", "#000000"))
 
-        steering_timeline_plot.spines["left"].set_color(
-            settings.get("steering_timeline_plot.axes_color", "#FFFFFF")
-        )
 
-        steering_timeline_plot.tick_params(axis='both', colors=text_color)
+        steering_timeline_plot.spines["bottom"].set_position("zero") # Fix x-axis to 0 of y-axis
+        steering_timeline_plot.tick_params(axis="both", colors=text_color) # Show ticks
+        steering_timeline_plot.plot(1, 0, ">", color=settings.get("steering_timeline_plot.axes_color", "#000000"), transform=steering_timeline_plot.get_yaxis_transform(), clip_on=False)
 
     else:
         for spine in steering_timeline_plot.spines.values():
