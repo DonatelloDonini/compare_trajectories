@@ -23,6 +23,7 @@ COLORED_OK= "\033[32m[ OK ]\033[0m"
 COLORED_WARNING= "\033[33m[ WARNING ]\033[0m"
 
 CM2INCH= 0.393701
+RADIANS2DEGREES= 57.29577951308232
 
 def read_trajectory(file_path: str, verbose: bool= False)-> pd.DataFrame:
     try:
@@ -34,15 +35,15 @@ def read_trajectory(file_path: str, verbose: bool= False)-> pd.DataFrame:
 
     return dataframe
 
-def get_heading_history(file_path: str, verbose: bool= False)-> list:
+def get_column(column_name: str, file_path: str, verbose: bool= False)-> list:
     dataframe= read_trajectory(file_path, verbose)
 
     ###                                        ###
     ### Checking wether required columns exist ###
     ###                                        ###
 
-    if "heading" not in dataframe.columns:
-        raise errors.UnexistentRequiredColumn("heading", filename= file_path)
+    if column_name not in dataframe.columns:
+        raise errors.UnexistentRequiredColumn(column_name, filename= file_path)
 
     return list(dataframe.heading)
 
@@ -249,8 +250,8 @@ def main(settings: Settings) -> None:
     ### Setting plot bounds ###
     ###                     ###
 
-    expected_heading_history= get_heading_history(expected_trajectory_file, VERBOSE)
-    real_heading_history= get_heading_history(real_trajectory_file, VERBOSE)
+    expected_heading_history= get_column("heading", expected_trajectory_file, VERBOSE)
+    real_heading_history= get_column("heading", real_trajectory_file, VERBOSE)
 
     if VERBOSE: print(f"{COLORED_OK} Succesfully extracted heading history.")
 
@@ -259,7 +260,12 @@ def main(settings: Settings) -> None:
     heading_timeline_plot.set_xlim(xmin=0, xmax= max_sampled_points)
     heading_timeline_plot.set_ylim(ymin=180, ymax= -180)
 
-    del expected_heading_history, real_heading_history
+    ###                         ###
+    ### Drawing heading history ###
+    ###                         ###
+
+    heading_timeline_plot.plot([i for i in range(len(expected_heading_history))], [heading*RADIANS2DEGREES for heading in expected_heading_history], label="Expected Heading", color=settings.get("expected_trajectory.color", "#FF0000"))
+    heading_timeline_plot.plot([i for i in range(len(real_heading_history))], [heading*RADIANS2DEGREES for heading in real_heading_history], label="Real Heading", color=settings.get("real_trajectory.color", "#00FF00"))
 
     ###                 ###
     ### Saving the plot ###
