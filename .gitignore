@@ -6,3 +6,6 @@ output/
 
 # Ignoring pycache
 __pycache__/
+
+# Ignoring virtual environment
+venv/
