@@ -235,7 +235,15 @@ def main(settings: Settings) -> None:
         heading_timeline_plot.xaxis.set_ticks_position("none")
         heading_timeline_plot.yaxis.set_ticks_position("none")
 
-    heading_timeline_plot.set_ylim(ymin=180, ymax= -180)
+    if settings.get("heading_timeline_plot.show_grid", True):
+        heading_timeline_plot.grid(
+            True,
+            which="major",
+            axis="y",
+            color=settings.get("heading_timeline_plot.grid_color", "#000000"),
+            linestyle="--",
+            linewidth=0.5
+        )
 
     ###                     ###
     ### Setting plot bounds ###
@@ -249,6 +257,9 @@ def main(settings: Settings) -> None:
     max_sampled_points= max(len(expected_heading_history), len(real_heading_history))
 
     heading_timeline_plot.set_xlim(xmin=0, xmax= max_sampled_points)
+    heading_timeline_plot.set_ylim(ymin=180, ymax= -180)
+
+    del expected_heading_history, real_heading_history
 
     ###                 ###
     ### Saving the plot ###
