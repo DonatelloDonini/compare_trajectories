@@ -160,13 +160,15 @@ def main(settings: Settings) -> None:
         ax,
         expected_trajectory_points,
         settings.get("expected_trajectory.color", "#FF0000"),
-        settings.get("expected_trajectory.thickness", 2)
+        settings.get("expected_trajectory.thickness", 2),
+        settings.get("expected_trajectory.alpha", .75)
     )
     draw_trajectory(
         ax,
         real_trajectory_points,
         settings.get("real_trajectory.color", "#00FF00"),
-        settings.get("real_trajectory.thickness", 2)
+        settings.get("real_trajectory.thickness", 2),
+        settings.get("real_trajectory.alpha", .75)
     )
 
     ###                 ###
