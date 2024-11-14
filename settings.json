@@ -1,0 +1,15 @@
+{
+    "files": {
+        "expected_trajectory_log_file": "expected.log",
+        "real_trajectory_log_file": "real.log",
+        "output_directory": "output"
+    },
+    "trajectories_comparisons_plot": {
+        "filename": "trajectories_comparisons.png",
+        "background_color": "#999999",
+        "title": "MY_TITLE"
+    },
+    "general": {
+        "verbose": "True"
+    }
+}
