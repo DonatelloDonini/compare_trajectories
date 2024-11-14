@@ -3,3 +3,6 @@ output/
 
 # Ignoring all log files
 *.log
+
+# Ignoring pycache
+__pycache__/
