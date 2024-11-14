@@ -37,16 +37,16 @@ def get_trajectory_points(file_path: str, verbose: bool= False)-> list:
     ### Checking wether required columns exist ###
     ###                                        ###
 
-    if 'x' not in dataframe.columns:
-        raise errors.UnexistentRequiredColumn('x', filename= file_path)
-    if 'y' not in dataframe.columns:
-        raise errors.UnexistentRequiredColumn('y', filename= file_path)
+    if "x" not in dataframe.columns:
+        raise errors.UnexistentRequiredColumn("x", filename= file_path)
+    if "y" not in dataframe.columns:
+        raise errors.UnexistentRequiredColumn("y", filename= file_path)
 
     return list(zip(dataframe.x, dataframe.y))
 
 def check_file_opens(file_path: str)-> bool:
     try:
-        with open(file_path, 'r'):
+        with open(file_path, "r"):
             return
     except IOError:
         raise errors.FileOpeningError(file_path)
@@ -79,22 +79,73 @@ def main(settings: Settings) -> None:
 
     if VERBOSE: print(f"{COLORED_OK} Succesfully extracted trajectory points.")
 
-    ###                                        ###
-    ### Calculating the dimensions of the plot ###
-    ###                                        ###
+    ###                       ###
+    ### Initializing the plot ###
+    ###                       ###
+
+    background_color= settings.get("trajectories_comparisons_plot.background_color", "#FFFFFF")
+    text_color= settings.get("trajectories_comparisons_plot.text_color", "#000000")
+    fig= plt.figure(
+        figsize=(
+            float(settings.get("trajectories_comparisons_plot.width_cm", 20.32)) * CM2INCH,
+            float(settings.get("trajectories_comparisons_plot.height_cm", 20.32)) * CM2INCH
+        ),
+        facecolor= background_color
+    )
+
+    ax = fig.add_subplot(111)
+    ax.set_title(
+        settings.get("trajectories_comparisons_plot.title", "Trajectories Comparison"),
+        loc= settings.get("trajectories_comparisons_plot.title_location", "left"),
+        color= text_color
+    )
+    ax.set_facecolor(background_color)
+
+    if not (settings.get("trajectories_comparisons_plot.show_axes", False)):
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+
+        ax.xaxis.set_ticks_position("none")
+        ax.yaxis.set_ticks_position("none")
+
+    plt.subplots_adjust(left=0.05, right=.95, bottom=0.05, top=0.92)
+
+    if settings.get("trajectories_comparisons_plot.show_grid", True):
+        ax.grid(
+            True,
+            which="major",
+            axis="both",
+            color=settings.get("trajectories_comparisons_plot.grid_color", "#000000"),
+            linestyle="--",
+            linewidth=0.5
+        )
+
+    plt.tick_params(
+        axis='both',
+        labelcolor=text_color
+    )
+
+    ###                     ###
+    ### Setting plot bounds ###
+    ###                     ###
+
+    top_bound= max(max(expected_trajectory_points, key= lambda x: x[1])[1], max(real_trajectory_points, key= lambda x: x[1])[1])
+    right_bound= max(max(expected_trajectory_points, key= lambda x: x[0])[0], max(real_trajectory_points, key= lambda x: x[0])[0])
+    bottom_bound= min(min(expected_trajectory_points, key= lambda x: x[1])[1], min(real_trajectory_points, key= lambda x: x[1])[1])
+    left_bound= min(min(expected_trajectory_points, key= lambda x: x[0])[0], min(real_trajectory_points, key= lambda x: x[0])[0])
+    internal_padding= 10/100
+    width= right_bound - left_bound
+    height= top_bound - bottom_bound
 
     coordinate_bounds={
-        "top": max(max(expected_trajectory_points, key= lambda x: x[1])[1], max(real_trajectory_points, key= lambda x: x[1])[1]),
-        "right": max(max(expected_trajectory_points, key= lambda x: x[0])[0], max(real_trajectory_points, key= lambda x: x[0])[0]),
-        "bottom": min(min(expected_trajectory_points, key= lambda x: x[1])[1], min(real_trajectory_points, key= lambda x: x[1])[1]),
-        "left": min(min(expected_trajectory_points, key= lambda x: x[0])[0], min(real_trajectory_points, key= lambda x: x[0])[0])
+        "top": top_bound + (internal_padding * height),
+        "right": right_bound + (internal_padding * width),
+        "bottom": bottom_bound - (internal_padding * height),
+        "left": left_bound - (internal_padding * width)
     }
 
-    TITLE= settings.get("trajectories_comparisons_plot.title", "Trajectories Comparisons")
-    BACKGROUND_COLOR= settings.get("trajectories_comparisons_plot.background_color", "#FFFFFF")
-    fig, ax = plt.subplots()
-    ax.set_title(TITLE)
-    ax.set_facecolor(BACKGROUND_COLOR)
+    del top_bound, right_bound, bottom_bound, left_bound, internal_padding, width, height
+
     ax.set_xlim(coordinate_bounds["left"], coordinate_bounds["right"])
     ax.set_ylim(coordinate_bounds["bottom"], coordinate_bounds["top"])
 

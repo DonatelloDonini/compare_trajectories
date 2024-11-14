@@ -5,11 +5,39 @@
         "output_directory": "output"
     },
     "trajectories_comparisons_plot": {
-        "filename": "trajectories_comparisons.png",
-        "background_color": "#999999",
-        "title": "MY_TITLE"
+        "height_cm": "16",
+        "width_cm": "16",
+        "filename": "trajectories_comparison.png",
+        "background_color": "#000000",
+        "title": "Trajectories Comparison",
+        "title_location": "left",
+        "text_color": "#FFFFFF",
+        "axis_color": "#000000",
+        "show_axes": false,
+        "grid_color": "#FFFFFF",
+        "show_grid": true
+    },
+    "real_trajectory": {
+        "color": "#FF0000",
+        "line_width": 2,
+        "line_style": "solid",
+        "marker": "circle",
+        "marker_size": 5,
+        "marker_color": "#FF0000",
+        "marker_line_width": 1,
+        "marker_line_color": "#FF0000"
+    },
+    "expected_trajectory": {
+        "color": "#0000FF",
+        "line_width": 2,
+        "line_style": "solid",
+        "marker": "circle",
+        "marker_size": 5,
+        "marker_color": "#0000FF",
+        "marker_line_width": 1,
+        "marker_line_color": "#0000FF"
     },
     "general": {
-        "verbose": "True"
+        "verbose": true
     }
 }
