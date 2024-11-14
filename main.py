@@ -12,6 +12,7 @@ python main.py <path/to/ideal_trajectory.csv> <path/to/real_trajectory.csv>
 ```
 """
 
+import matplotlib
 import matplotlib.pyplot as plt
 import os
 import pandas as pd # type: ignore
@@ -19,11 +20,16 @@ import pandas as pd # type: ignore
 import errors
 from settings import Settings
 
-# def draw_trajectory(plot, points: list)-> None:
-#     pass
+matplotlib.use("Agg")
 
 COLORED_OK= "\033[32m[ OK ]\033[0m"
 COLORED_WARNING= "\033[33m[ WARNING ]\033[0m"
+
+CM2INCH= 0.393701
+
+def draw_trajectory(ax, points: list):
+    x, y= zip(*points)
+    ax.plot(x, y)
 
 def get_trajectory_points(file_path: str, verbose: bool= False)-> list:
     try:
@@ -152,6 +158,9 @@ def main(settings: Settings) -> None:
     ###                          ###
     ### Drawing the trajectories ###
     ###                          ###
+
+    draw_trajectory(ax, expected_trajectory_points)
+    # draw_trajectory(ax, real_trajectory_points)
 
     ###                 ###
     ### Saving the plot ###
