@@ -89,35 +89,42 @@ def main(settings: Settings) -> None:
     ### Initializing the plot ###
     ###                       ###
 
-    background_color= settings.get("trajectories_comparisons_plot.background_color", "#FFFFFF")
-    text_color= settings.get("trajectories_comparisons_plot.text_color", "#000000")
-    fig= plt.figure(
+    background_color= settings.get("general_styling.background_color", "#FFFFFF")
+    text_color= settings.get("general_styling.text_color", "#000000")
+    canvas= plt.figure(
         figsize=(
-            float(settings.get("trajectories_comparisons_plot.width_cm", 16)) * CM2INCH,
-            float(settings.get("trajectories_comparisons_plot.height_cm", 16)) * CM2INCH
+            float(settings.get("general.width_cm", 16)) * CM2INCH,
+            float(settings.get("general.height_cm", 32)) * CM2INCH
         ),
         facecolor= background_color
     )
 
-    ax = fig.add_subplot(111)
-    ax.set_title(
+    trajectories_plot= plt.subplot(121)
+    trajectories_plot.set_title(
         settings.get("trajectories_comparisons_plot.title", "Trajectories Comparison"),
         loc= settings.get("trajectories_comparisons_plot.title_location", "left"),
         color= text_color
     )
-    ax.set_facecolor(background_color)
+    trajectories_plot.set_facecolor(background_color)
 
-    if not (settings.get("trajectories_comparisons_plot.show_axes", False)):
-        for spine in ax.spines.values():
+    if settings.get("trajectories_comparisons_plot.show_axes", False):
+        trajectories_plot.spines["bottom"].set_color(
+            settings.get("trajectories_comparisons_plot.axes_color", "#FFFFFF")
+        )
+        trajectories_plot.spines["left"].set_color(
+            settings.get("trajectories_comparisons_plot.axes_color", "#FFFFFF")
+        )
+    else:
+        for spine in trajectories_plot.spines.values():
             spine.set_visible(False)
 
-        ax.xaxis.set_ticks_position("none")
-        ax.yaxis.set_ticks_position("none")
+        trajectories_plot.xaxis.set_ticks_position("none")
+        trajectories_plot.yaxis.set_ticks_position("none")
 
     plt.subplots_adjust(left=0.05, right=.95, bottom=0.05, top=0.92)
 
     if settings.get("trajectories_comparisons_plot.show_grid", True):
-        ax.grid(
+        trajectories_plot.grid(
             True,
             which="major",
             axis="both",
@@ -127,7 +134,7 @@ def main(settings: Settings) -> None:
         )
 
     plt.tick_params(
-        axis='both',
+        axis="both",
         labelcolor=text_color
     )
 
@@ -152,8 +159,8 @@ def main(settings: Settings) -> None:
 
     del top_bound, right_bound, bottom_bound, left_bound, internal_padding, width, height
 
-    ax.set_xlim(coordinate_bounds["left"], coordinate_bounds["right"])
-    ax.set_ylim(coordinate_bounds["bottom"], coordinate_bounds["top"])
+    trajectories_plot.set_xlim(coordinate_bounds["left"], coordinate_bounds["right"])
+    trajectories_plot.set_ylim(coordinate_bounds["bottom"], coordinate_bounds["top"])
 
     ###                          ###
     ### Drawing the trajectories ###
@@ -180,11 +187,49 @@ def main(settings: Settings) -> None:
         background_color
     )
 
+    ###                                         ###
+    ### Initializing the steering-timeline plot ###
+    ###                                         ###
+
+    steering_timeline_plot= plt.subplot(122)
+    steering_timeline_plot.set_title(
+        settings.get("steering_timeline_plot.title", "Steering Timeline"),
+        loc= settings.get("steering_timeline_plot.title_location", "left"),
+        color= text_color
+    )
+    steering_timeline_plot.set_facecolor(background_color)
+
+    if settings.get("steering_timeline_plot.show_axes", True):
+        # Set color to axes
+        steering_timeline_plot.spines["top"].set_color("none")
+        steering_timeline_plot.spines["right"].set_color("none")
+        steering_timeline_plot.spines["bottom"].set_color(settings.get("steering_timeline_plot.axes_color", "#000000"))
+        steering_timeline_plot.spines["left"].set_color(settings.get("steering_timeline_plot.axes_color", "#000000"))
+
+
+        steering_timeline_plot.spines["bottom"].set_position("zero") # Fix x-axis to 0 of y-axis
+        steering_timeline_plot.tick_params(axis="both", colors=text_color) # Show ticks
+        steering_timeline_plot.plot(1, 0, ">", color=settings.get("steering_timeline_plot.axes_color", "#000000"), transform=steering_timeline_plot.get_yaxis_transform(), clip_on=False)
+
+    else:
+        for spine in steering_timeline_plot.spines.values():
+            spine.set_visible(False)
+
+        steering_timeline_plot.xaxis.set_ticks_position("none")
+        steering_timeline_plot.yaxis.set_ticks_position("none")
+
+    steering_timeline_plot.set_ylim(ymin=180, ymax= -180)
+
+    ###                     ###
+    ### Setting plot bounds ###
+    ###                     ###
+
+
     ###                 ###
     ### Saving the plot ###
     ###                 ###
 
-    trajectories_comparison_output_path= os.path.join(OUTPUT_DIRECTORY, settings.get("trajectories_comparisons_plot.filename", "trajectories_comparison.png"))
+    trajectories_comparison_output_path= os.path.join(OUTPUT_DIRECTORY, settings.get("files.filename", "trajectories_comparison.png"))
     plt.savefig(trajectories_comparison_output_path)
 
     if VERBOSE: print(f"{COLORED_OK} Succesfully saved the plot at '{trajectories_comparison_output_path}'.")
