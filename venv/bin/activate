@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/donnynja/task_1/compare_trajectories/venv"
+VIRTUAL_ENV="/home/donnynja/compare_trajectories/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

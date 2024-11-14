@@ -1,4 +1,4 @@
-#!/home/donnynja/task_1/compare_trajectories/venv/bin/python3
+#!/home/donnynja/compare_trajectories/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
