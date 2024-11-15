@@ -27,8 +27,93 @@ COLUMNS= 3
 CM2INCH= 0.393701
 RADIANS2DEGREES= 57.29577951308232
 
-def angle_measure_comparison_template(angle_measure_name: str, expected_trajectory_file_path: str, real_trajectory_file_path: str)-> None:
-    pass
+def angle_timeline_comparison_template(plot: plt.Axes, first_path_args: dict, second_path_args: dict, background_color: str= None, title_args: dict= None, axes_args: dict= dict(), grid_args: dict= dict(), legend_args: dict= dict())-> None:
+    DEFAULT_BACKGROUND_COLOR= "#FFFFFF"
+    DEFAULT_TEXT_COLOR= "#000000"
+    DEFAULT_FIRST_TRAJECTORY_COLOR= "#FF0000"
+    DEFAULT_SECOND_TRAJECTORY_COLOR= "#00FF00"
+
+    ###                    ###
+    ### Handling the title ###
+    ###                    ###
+
+    if title_args is not None:
+        plot.set_title(
+            label= title_args.get("text", "TITLE"),
+            loc= title_args.get("loc", "left"),
+            color= title_args.get("color", DEFAULT_TEXT_COLOR)
+        )
+
+    ###                               ###
+    ### Handling the background color ###
+    ###                               ###
+
+    plot.set_facecolor((background_color if (background_color is not None) else DEFAULT_BACKGROUND_COLOR))
+
+    ###               ###
+    ### Handling axes ###
+    ###               ###
+
+    if axes_args.get("show", True):
+        plot.spines["top"].set_color("none")
+        plot.spines["right"].set_color("none")
+        plot.spines["bottom"].set_color(axes_args.get("color", DEFAULT_TEXT_COLOR))
+        plot.spines["left"].set_color(axes_args.get("color", DEFAULT_TEXT_COLOR))
+
+
+        plot.spines["bottom"].set_position("zero") # Fix x-axis to 0 of y-axis
+        plot.tick_params(axis="both", colors=axes_args.get("color", DEFAULT_TEXT_COLOR)) # Show ticks
+        plot.plot(1, 0, ">", color=axes_args.get("color", DEFAULT_TEXT_COLOR), transform=plot.get_yaxis_transform(), clip_on=False)
+
+    else:
+        for spine in plot.spines.values():
+            spine.set_visible(False)
+
+        plot.xaxis.set_ticks_position("none")
+        plot.yaxis.set_ticks_position("none")
+
+    ###               ###
+    ### Handling grid ###
+    ###               ###
+
+    if grid_args.get("show", True):
+        plot.grid(
+            True,
+            which="major",
+            axis="y",
+            color=grid_args.get("color", DEFAULT_TEXT_COLOR),
+            linestyle="--",
+            linewidth=0.5
+        )
+
+    ###                  ###
+    ### Handling drawing ###
+    ###                  ###
+
+    x_axis_upper_bound= max(first_path_args["data"]["x"]+second_path_args["data"]["x"])
+
+    plot.set_xlim(xmin=0, xmax= x_axis_upper_bound)
+    plot.set_ylim(ymin=180, ymax= -180)
+
+    plot.plot(
+        first_path_args["data"]["x"],
+        [heading*RADIANS2DEGREES for heading in first_path_args["data"]["y"]],
+        label=first_path_args.get("label", "Trajectory 1"),
+        color=first_path_args.get("color", DEFAULT_FIRST_TRAJECTORY_COLOR)
+    )
+    plot.plot(
+        second_path_args["data"]["x"],
+        [heading*RADIANS2DEGREES for heading in second_path_args["data"]["y"]],
+        label=second_path_args.get("label", "Trajectory 2"),
+        color=second_path_args.get("color", DEFAULT_SECOND_TRAJECTORY_COLOR)
+    )
+
+    ###                 ###
+    ### Handling Legend ###
+    ###                 ###
+
+    if legend_args.get("show", True):
+        plt.legend(facecolor= legend_args.get("background_color", DEFAULT_TEXT_COLOR), labelcolor= legend_args.get("text_color", DEFAULT_BACKGROUND_COLOR), framealpha= 1, loc="lower right")
 
 def read_trajectory(file_path: str, verbose: bool= False)-> pd.DataFrame:
     try:
@@ -50,7 +135,7 @@ def get_column(column_name: str, file_path: str, verbose: bool= False)-> list:
     if column_name not in dataframe.columns:
         raise errors.UnexistentRequiredColumn(column_name, filename= file_path)
 
-    return list(dataframe.heading)
+    return list(dataframe[column_name])
 
 def draw_trajectory(points: list, label: str, color: str, thickness: int= 1, alpha: float= 0.75)-> None:
     x, y= zip(*points)
@@ -209,75 +294,135 @@ def main(settings: Settings) -> None:
     ###                                        ###
 
     heading_timeline_plot= plt.subplot(ROWS, COLUMNS, (4, 4))
-    heading_timeline_plot.set_title(
-        settings.get("heading_timeline_plot.title", "Heading Timeline"),
-        loc= settings.get("heading_timeline_plot.title_location", "left"),
-        color= text_color
-    )
-    heading_timeline_plot.set_facecolor(background_color)
 
-    if settings.get("heading_timeline_plot.show_axes", True):
-        # Set color to axes
-        heading_timeline_plot.spines["top"].set_color("none")
-        heading_timeline_plot.spines["right"].set_color("none")
-        heading_timeline_plot.spines["bottom"].set_color(settings.get("heading_timeline_plot.axes_color", "#000000"))
-        heading_timeline_plot.spines["left"].set_color(settings.get("heading_timeline_plot.axes_color", "#000000"))
-
-
-        heading_timeline_plot.spines["bottom"].set_position("zero") # Fix x-axis to 0 of y-axis
-        heading_timeline_plot.tick_params(axis="both", colors=text_color) # Show ticks
-        heading_timeline_plot.plot(1, 0, ">", color=settings.get("heading_timeline_plot.axes_color", "#000000"), transform=heading_timeline_plot.get_yaxis_transform(), clip_on=False)
-
-    else:
-        for spine in heading_timeline_plot.spines.values():
-            spine.set_visible(False)
-
-        heading_timeline_plot.xaxis.set_ticks_position("none")
-        heading_timeline_plot.yaxis.set_ticks_position("none")
-
-    if settings.get("heading_timeline_plot.show_grid", True):
-        heading_timeline_plot.grid(
-            True,
-            which="major",
-            axis="y",
-            color=settings.get("heading_timeline_plot.grid_color", "#000000"),
-            linestyle="--",
-            linewidth=0.5
-        )
-
-    ###                     ###
-    ### Setting plot bounds ###
-    ###                     ###
-
-    expected_heading_history= get_column("heading", expected_trajectory_file, VERBOSE)
-    real_heading_history= get_column("heading", real_trajectory_file, VERBOSE)
-
-    if VERBOSE: print(f"{COLORED_OK} Succesfully extracted heading history.")
-
-    max_sampled_points= max(len(expected_heading_history), len(real_heading_history))
-
-    heading_timeline_plot.set_xlim(xmin=0, xmax= max_sampled_points)
-    heading_timeline_plot.set_ylim(ymin=180, ymax= -180)
-
-    ###                         ###
-    ### Drawing heading history ###
-    ###                         ###
-
-    heading_timeline_plot.plot(
-        [i for i in range(len(expected_heading_history))],
-        [heading*RADIANS2DEGREES for heading in expected_heading_history],
-        label=settings.get("expected_trajectory.label", "Expected Heading"),
-        color=settings.get("expected_trajectory.color", "#FF0000")
-    )
-    heading_timeline_plot.plot(
-        [i for i in range(len(real_heading_history))],
-        [heading*RADIANS2DEGREES for heading in real_heading_history],
-        label=settings.get("real_trajectory.label", "Real Heading"),
-        color=settings.get("real_trajectory.color", "#00FF00")
+    angle_timeline_comparison_template(
+        heading_timeline_plot,
+        first_path_args= {
+            "data": {
+                "x": get_column("s", expected_trajectory_file, VERBOSE),
+                "y": get_column("heading", expected_trajectory_file, VERBOSE)
+            },
+            "label": settings.get("expected_trajectory.label", "Expected Heading"),
+            "color": settings.get("expected_trajectory.color", "#FF0000")
+        },
+        second_path_args= {
+            "data": {
+                "x": get_column("s", real_trajectory_file, VERBOSE),
+                "y": get_column("heading", real_trajectory_file, VERBOSE)
+            },
+            "label": settings.get("real_trajectory.label", "Real Heading"),
+            "color": settings.get("real_trajectory.color", "#00FF00")
+        },
+        background_color= background_color,
+        title_args= {
+            "text": settings.get("heading_timeline_plot.title", "Heading Timeline"),
+            "loc": settings.get("heading_timeline_plot.title_location", "left"),
+            "color": text_color
+        },
+        axes_args= {
+            "show": settings.get("heading_timeline_plot.show_axes", True),
+            "color": settings.get("heading_timeline_plot.axes_color", "#000000")
+        },
+        grid_args= {
+            "show": settings.get("heading_timeline_plot.show_grid", True),
+            "color": settings.get("heading_timeline_plot.grid_color", "#000000")
+        },
+        legend_args= {
+            "show": settings.get("heading_timeline_plot.show_legend", True),
+            "background_color": text_color,
+            "text_color": background_color,
+        }
     )
 
-    if settings.get("heading_timeline_plot.show_legend", True):
-        plt.legend(facecolor= text_color, labelcolor= background_color, framealpha= 1, loc="lower right")
+    ###                                      ###
+    ### Initializing the angle-timeline plot ###
+    ###                                      ###
+
+    heading_timeline_plot= plt.subplot(ROWS, COLUMNS, (5, 5))
+
+    angle_timeline_comparison_template(
+        heading_timeline_plot,
+        first_path_args= {
+            "data": {
+                "x": get_column("s", expected_trajectory_file, VERBOSE),
+                "y": get_column("angle", expected_trajectory_file, VERBOSE)
+            },
+            "label": settings.get("expected_trajectory.label", "Expected Heading"),
+            "color": settings.get("expected_trajectory.color", "#FF0000")
+        },
+        second_path_args= {
+            "data": {
+                "x": get_column("s", real_trajectory_file, VERBOSE),
+                "y": get_column("angle", real_trajectory_file, VERBOSE)
+            },
+            "label": settings.get("real_trajectory.label", "Real Heading"),
+            "color": settings.get("real_trajectory.color", "#00FF00")
+        },
+        background_color= background_color,
+        title_args= {
+            "text": settings.get("angle_timeline_plot.title", "Heading Timeline"),
+            "loc": settings.get("angle_timeline_plot.title_location", "left"),
+            "color": text_color
+        },
+        axes_args= {
+            "show": settings.get("angle_timeline_plot.show_axes", True),
+            "color": settings.get("angle_timeline_plot.axes_color", "#000000")
+        },
+        grid_args= {
+            "show": settings.get("angle_timeline_plot.show_grid", True),
+            "color": settings.get("angle_timeline_plot.grid_color", "#000000")
+        },
+        legend_args= {
+            "show": settings.get("angle_timeline_plot.show_legend", True),
+            "background_color": text_color,
+            "text_color": background_color,
+        }
+    )
+
+    ###                                      ###
+    ### Initializing the delta-timeline plot ###
+    ###                                      ###
+
+    heading_timeline_plot= plt.subplot(ROWS, COLUMNS, (6, 6))
+
+    angle_timeline_comparison_template(
+        heading_timeline_plot,
+        first_path_args= {
+            "data": {
+                "x": get_column("s", expected_trajectory_file, VERBOSE),
+                "y": get_column("delta", expected_trajectory_file, VERBOSE)
+            },
+            "label": settings.get("expected_trajectory.label", "Expected Heading"),
+            "color": settings.get("expected_trajectory.color", "#FF0000")
+        },
+        second_path_args= {
+            "data": {
+                "x": get_column("s", real_trajectory_file, VERBOSE),
+                "y": get_column("delta", real_trajectory_file, VERBOSE)
+            },
+            "label": settings.get("real_trajectory.label", "Real Heading"),
+            "color": settings.get("real_trajectory.color", "#00FF00")
+        },
+        background_color= background_color,
+        title_args= {
+            "text": settings.get("delta_timeline_plot.title", "Heading Timeline"),
+            "loc": settings.get("delta_timeline_plot.title_location", "left"),
+            "color": text_color
+        },
+        axes_args= {
+            "show": settings.get("delta_timeline_plot.show_axes", True),
+            "color": settings.get("delta_timeline_plot.axes_color", "#000000")
+        },
+        grid_args= {
+            "show": settings.get("delta_timeline_plot.show_grid", True),
+            "color": settings.get("delta_timeline_plot.grid_color", "#000000")
+        },
+        legend_args= {
+            "show": settings.get("delta_timeline_plot.show_legend", True),
+            "background_color": text_color,
+            "text_color": background_color,
+        }
+    )
 
     ###                 ###
     ### Saving the plot ###
