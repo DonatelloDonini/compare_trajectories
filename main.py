@@ -338,16 +338,16 @@ def main(settings: Settings) -> None:
     ### Initializing the angle-timeline plot ###
     ###                                      ###
 
-    heading_timeline_plot= plt.subplot(ROWS, COLUMNS, (5, 5))
+    angle_timepline_plot= plt.subplot(ROWS, COLUMNS, (5, 5))
 
     angle_timeline_comparison_template(
-        heading_timeline_plot,
+        angle_timepline_plot,
         first_path_args= {
             "data": {
                 "x": get_column("s", expected_trajectory_file, VERBOSE),
                 "y": get_column("angle", expected_trajectory_file, VERBOSE)
             },
-            "label": settings.get("expected_trajectory.label", "Expected Heading"),
+            "label": settings.get("expected_trajectory.label", "Expected Angle"),
             "color": settings.get("expected_trajectory.color", "#FF0000")
         },
         second_path_args= {
@@ -355,12 +355,12 @@ def main(settings: Settings) -> None:
                 "x": get_column("s", real_trajectory_file, VERBOSE),
                 "y": get_column("angle", real_trajectory_file, VERBOSE)
             },
-            "label": settings.get("real_trajectory.label", "Real Heading"),
+            "label": settings.get("real_trajectory.label", "Real Angle"),
             "color": settings.get("real_trajectory.color", "#00FF00")
         },
         background_color= background_color,
         title_args= {
-            "text": settings.get("angle_timeline_plot.title", "Heading Timeline"),
+            "text": settings.get("angle_timeline_plot.title", "Angle Timeline"),
             "loc": settings.get("angle_timeline_plot.title_location", "left"),
             "color": text_color
         },
@@ -383,16 +383,16 @@ def main(settings: Settings) -> None:
     ### Initializing the delta-timeline plot ###
     ###                                      ###
 
-    heading_timeline_plot= plt.subplot(ROWS, COLUMNS, (6, 6))
+    delta_timeline_plot= plt.subplot(ROWS, COLUMNS, (6, 6))
 
     angle_timeline_comparison_template(
-        heading_timeline_plot,
+        delta_timeline_plot,
         first_path_args= {
             "data": {
                 "x": get_column("s", expected_trajectory_file, VERBOSE),
                 "y": get_column("delta", expected_trajectory_file, VERBOSE)
             },
-            "label": settings.get("expected_trajectory.label", "Expected Heading"),
+            "label": settings.get("expected_trajectory.label", "Expected Delta"),
             "color": settings.get("expected_trajectory.color", "#FF0000")
         },
         second_path_args= {
@@ -400,12 +400,12 @@ def main(settings: Settings) -> None:
                 "x": get_column("s", real_trajectory_file, VERBOSE),
                 "y": get_column("delta", real_trajectory_file, VERBOSE)
             },
-            "label": settings.get("real_trajectory.label", "Real Heading"),
+            "label": settings.get("real_trajectory.label", "Real Delta"),
             "color": settings.get("real_trajectory.color", "#00FF00")
         },
         background_color= background_color,
         title_args= {
-            "text": settings.get("delta_timeline_plot.title", "Heading Timeline"),
+            "text": settings.get("delta_timeline_plot.title", "Delta Timeline"),
             "loc": settings.get("delta_timeline_plot.title_location", "left"),
             "color": text_color
         },
