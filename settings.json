@@ -1,8 +1,8 @@
 {
     "general": {
         "verbose": true,
-        "height_cm": 16,
-        "width_cm": 32
+        "height_cm": 32,
+        "width_cm": 48
     },
     "files": {
         "expected_trajectory_log_file": "path_1.csv",
@@ -20,7 +20,8 @@
         "show_axes": false,
         "axes_color": "#FFFFFF",
         "show_grid": true,
-        "grid_color": "#FFFFFF"
+        "grid_color": "#FFFFFF",
+        "show_legend": true
     },
     "heading_timeline_plot": {
         "title": "Heading Timeline",
@@ -28,7 +29,26 @@
         "show_axes": true,
         "axes_color": "#FFFFFF",
         "show_grid": true,
-        "grid_color": "#FFFFFF"
+        "grid_color": "#FFFFFF",
+        "show_legend": true
+    },
+    "angle_timeline_plot": {
+        "title": "Angle Timeline",
+        "title_location": "left",
+        "show_axes": true,
+        "axes_color": "#FFFFFF",
+        "show_grid": true,
+        "grid_color": "#FFFFFF",
+        "show_legend": true
+    },
+    "delta_timeline_plot": {
+        "title": "Delta Timeline",
+        "title_location": "left",
+        "show_axes": true,
+        "axes_color": "#FFFFFF",
+        "show_grid": true,
+        "grid_color": "#FFFFFF",
+        "show_legend": true
     },
     "real_trajectory": {
         "label": "Real Trajectory",

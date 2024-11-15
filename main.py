@@ -21,9 +21,14 @@ matplotlib.use("Agg")
 
 COLORED_OK= "\033[32m[ OK ]\033[0m"
 COLORED_WARNING= "\033[33m[ WARNING ]\033[0m"
+ROWS= 2
+COLUMNS= 3
 
 CM2INCH= 0.393701
 RADIANS2DEGREES= 57.29577951308232
+
+def angle_measure_comparison_template(angle_measure_name: str, expected_trajectory_file_path: str, real_trajectory_file_path: str)-> None:
+    pass
 
 def read_trajectory(file_path: str, verbose: bool= False)-> pd.DataFrame:
     try:
@@ -47,12 +52,9 @@ def get_column(column_name: str, file_path: str, verbose: bool= False)-> list:
 
     return list(dataframe.heading)
 
-def draw_trajectory(points: list, label: str, color: str, thickness: int= 1, alpha: float= 0.75, show_legend: bool= True, legend_background_color: str= "#FFFFFF", legend_text_color: str= "#000000")-> None:
+def draw_trajectory(points: list, label: str, color: str, thickness: int= 1, alpha: float= 0.75)-> None:
     x, y= zip(*points)
     plt.plot(x, y, label= label, color= color, linewidth= thickness, alpha= alpha)
-    if show_legend:
-        plt.legend(facecolor= legend_background_color, labelcolor= legend_text_color, framealpha= 1, loc="lower right")
-
 
 def get_trajectory_points(file_path: str, verbose: bool= False)-> list:
     dataframe= read_trajectory(file_path, verbose)
@@ -109,15 +111,15 @@ def main(settings: Settings) -> None:
 
     background_color= settings.get("general_styling.background_color", "#FFFFFF")
     text_color= settings.get("general_styling.text_color", "#000000")
-    canvas= plt.figure(
+    plt.figure(
         figsize=(
-            float(settings.get("general.width_cm", 16)) * CM2INCH,
-            float(settings.get("general.height_cm", 32)) * CM2INCH
+            float(settings.get("general.width_cm", 32)) * CM2INCH,
+            float(settings.get("general.height_cm", 48)) * CM2INCH
         ),
         facecolor= background_color
     )
 
-    trajectories_plot= plt.subplot(121)
+    trajectories_plot= plt.subplot(ROWS, COLUMNS, (1, 1))
     trajectories_plot.set_title(
         settings.get("trajectories_comparisons_plot.title", "Trajectories Comparison"),
         loc= settings.get("trajectories_comparisons_plot.title_location", "left"),
@@ -189,27 +191,24 @@ def main(settings: Settings) -> None:
         settings.get("expected_trajectory.label", "Expected Trajectory"),
         settings.get("expected_trajectory.color", "#FF0000"),
         settings.get("expected_trajectory.line_width", 2),
-        settings.get("expected_trajectory.alpha", 0.75),
-        settings.get("trajectories_comparisons_plot.show_legend", True),
-        text_color,
-        background_color
+        settings.get("expected_trajectory.alpha", 0.75)
     )
     draw_trajectory(
         real_trajectory_points,
         settings.get("real_trajectory.label", "Real Trajectory"),
         settings.get("real_trajectory.color", "#00FF00"),
         settings.get("real_trajectory.line_width", 2),
-        settings.get("real_trajectory.alpha", .75),
-        settings.get("trajectories_comparisons_plot.show_legend", True),
-        text_color,
-        background_color
+        settings.get("real_trajectory.alpha", .75)
     )
+
+    if settings.get("trajectories_comparisons_plot.show_legend", True):
+        plt.legend(facecolor= text_color, labelcolor= background_color, framealpha= 1, loc="lower right")
 
     ###                                        ###
     ### Initializing the heading-timeline plot ###
     ###                                        ###
 
-    heading_timeline_plot= plt.subplot(122)
+    heading_timeline_plot= plt.subplot(ROWS, COLUMNS, (4, 4))
     heading_timeline_plot.set_title(
         settings.get("heading_timeline_plot.title", "Heading Timeline"),
         loc= settings.get("heading_timeline_plot.title_location", "left"),
@@ -264,8 +263,21 @@ def main(settings: Settings) -> None:
     ### Drawing heading history ###
     ###                         ###
 
-    heading_timeline_plot.plot([i for i in range(len(expected_heading_history))], [heading*RADIANS2DEGREES for heading in expected_heading_history], label="Expected Heading", color=settings.get("expected_trajectory.color", "#FF0000"))
-    heading_timeline_plot.plot([i for i in range(len(real_heading_history))], [heading*RADIANS2DEGREES for heading in real_heading_history], label="Real Heading", color=settings.get("real_trajectory.color", "#00FF00"))
+    heading_timeline_plot.plot(
+        [i for i in range(len(expected_heading_history))],
+        [heading*RADIANS2DEGREES for heading in expected_heading_history],
+        label=settings.get("expected_trajectory.label", "Expected Heading"),
+        color=settings.get("expected_trajectory.color", "#FF0000")
+    )
+    heading_timeline_plot.plot(
+        [i for i in range(len(real_heading_history))],
+        [heading*RADIANS2DEGREES for heading in real_heading_history],
+        label=settings.get("real_trajectory.label", "Real Heading"),
+        color=settings.get("real_trajectory.color", "#00FF00")
+    )
+
+    if settings.get("heading_timeline_plot.show_legend", True):
+        plt.legend(facecolor= text_color, labelcolor= background_color, framealpha= 1, loc="lower right")
 
     ###                 ###
     ### Saving the plot ###
